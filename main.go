@@ -1,9 +1,15 @@
 package main
 
 import (
+	//	"crypto/sha1"
+	"fmt"
 	"html/template"
-	"log"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	//uuid "github.com/satori/go.uuid"
 )
 
 var tpl *template.Template
@@ -14,17 +20,39 @@ func init() {
 }
 
 func main() {
-	http.Handle("/", http.HandlerFunc(front))
+	http.Handle("/", http.HandlerFunc(index))
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.ListenAndServe(":8080", nil)
 }
 
-func front(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err := tpl.ExecuteTemplate(res, "front.html", nil)
-	if err != nil {
-		log.Fatal(err)
+func index(res http.ResponseWriter, req *http.Request) {
+	// process form submission
+	if req.Method == http.MethodPost {
+		mf, fh, err := req.FormFile("nf")
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer mf.Close()
+		split := strings.Split(fh.Filename, ".")
+		name, ext := split[0], split[1]
+		fname := fmt.Sprintf(name + "." + ext)
+		// create new fileS
+		wd, err := os.Getwd()
+		if err != nil {
+			fmt.Println(err)
+		}
+		path := filepath.Join(wd, "public", "pics", fname)
+		nf, err := os.Create(path)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer nf.Close()
+		// copy
+		mf.Seek(0, 0)
+		io.Copy(nf, mf)
+		// add filename to this user's cookie
 	}
+	tpl.ExecuteTemplate(res, "front.html", nil)
 }
