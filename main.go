@@ -26,9 +26,10 @@ func init() {
 
 func main() {
 	http.Handle("/", http.HandlerFunc(index))
-	fs := http.FileServer(http.Dir("./public/pics"))
-	http.Handle("/public/pics/", http.StripPrefix("/public/pics", fs))
+	fs := http.FileServer(http.Dir("./public"))
+	http.Handle("/public/", http.StripPrefix("/public", fs))
 	http.Handle("/display", http.HandlerFunc(display))
+	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -49,7 +50,7 @@ func index(res http.ResponseWriter, req *http.Request) {
 		if isNew(h) {
 			hashes[string(h.Sum(nil))] = name
 		} else {
-			println("pi exists! \n")
+			println("pic exists!" + name + " \n")
 		}
 		fname := fmt.Sprintf(name + "." + ext)
 		// create new fileS
@@ -81,5 +82,20 @@ func isNew(h hash.Hash) bool {
 		return false
 	}
 	return true
+
+}
+
+func get_all_names() []string {
+	names := make([]string, 0)
+	//val in hashes is pics name
+	for _, name := range hashes {
+		names = append(names, name)
+	}
+	return names
+}
+
+func display_all_names(res http.ResponseWriter, req *http.Request) {
+	names := get_all_names()
+	tpl.ExecuteTemplate(res, "display_all_names.html", names)
 
 }
