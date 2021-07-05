@@ -36,39 +36,48 @@ func main() {
 func index(res http.ResponseWriter, req *http.Request) {
 	// process form submission
 	if req.Method == http.MethodPost {
-		mf, fh, err := req.FormFile("nf")
-		if err != nil {
-			fmt.Println(err)
-		}
-		h := sha256.New()
-		if _, err := io.Copy(h, mf); err != nil {
-			log.Fatal(err)
-		}
-		defer mf.Close()
-		split := strings.Split(fh.Filename, ".")
-		name, ext := split[0], split[1]
-		if isNew(h) {
-			hashes[string(h.Sum(nil))] = name
-		} else {
-			println("pic exists!" + name + " \n")
-		}
-		fname := fmt.Sprintf(name + "." + ext)
-		// create new fileS
-		wd, err := os.Getwd()
-		if err != nil {
-			fmt.Println(err)
-		}
-		path := filepath.Join(wd, "public", "pics", fname)
-		nf, err := os.Create(path)
-		if err != nil {
-			fmt.Println(err)
-		}
-		defer nf.Close()
-		// copy
-		mf.Seek(0, 0)
-		io.Copy(nf, mf)
+		handle_upload(res, req)
+		return
 	}
 	tpl.ExecuteTemplate(res, "front.html", nil)
+
+}
+
+func handle_upload(res http.ResponseWriter, req *http.Request) {
+	mf, fh, err := req.FormFile("nf")
+	if err != nil {
+		fmt.Println(err)
+	}
+	h := sha256.New()
+	if _, err := io.Copy(h, mf); err != nil {
+		log.Fatal(err)
+	}
+	defer mf.Close()
+	split := strings.Split(fh.Filename, ".")
+	name, ext := split[0], split[1]
+	if !isNew(h) {
+		tpl.ExecuteTemplate(res, "error.html", "pic already uploaded!")
+		return
+	}
+	hashes[string(h.Sum(nil))] = name
+	fname := fmt.Sprintf(name + "." + ext)
+	// create new fileS
+	wd, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	path := filepath.Join(wd, "public", "pics", fname)
+	nf, err := os.Create(path)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer nf.Close()
+	// copy
+	mf.Seek(0, 0)
+	io.Copy(nf, mf)
+
+	tpl.ExecuteTemplate(res, "front.html", nil)
+
 }
 
 func display(res http.ResponseWriter, req *http.Request) {
