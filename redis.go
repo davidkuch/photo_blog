@@ -17,8 +17,7 @@ func redisSetSession(name string, uuid string) {
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
-
-	err := rdb.Set(ctx, uuid, name, 6000*5).Err()
+	err := rdb.Set(ctx, uuid, name, 600000*5).Err()
 	if err != nil {
 		panic(err)
 	}

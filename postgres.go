@@ -31,7 +31,7 @@ func connect() {
 	if err != nil {
 		panic(err)
 	}
-
+	println("got here!\n")
 }
 
 func InsertUser(name string, userpassword string) {
@@ -83,6 +83,33 @@ func getNames() []string {
 	connect()
 	var names = make([]string, 0)
 	sqlstt := `select username from users`
+	rows, err := db.Query(sqlstt)
+	if err != nil {
+		// handle this error better than this
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var name string
+		err = rows.Scan(&name)
+		if err != nil {
+			// handle this error
+			panic(err)
+		}
+		names = append(names, name)
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+	return names
+}
+
+func getUsersGalleries(username string) []string {
+	connect()
+	var names = make([]string, 0)
+	sqlstt := `select gallery_name from galleries where username=$1;`
 	rows, err := db.Query(sqlstt)
 	if err != nil {
 		// handle this error better than this

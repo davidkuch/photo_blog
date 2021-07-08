@@ -12,7 +12,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	//uuid "github.com/satori/go.uuid"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 var tpl *template.Template
@@ -28,6 +29,13 @@ func main() {
 	http.Handle("/", http.HandlerFunc(index))
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/public/", http.StripPrefix("/public", fs))
+	// i would try to make it static served
+	//http.Handle("/registry",http.HandlerFunc(register_place))
+	http.Handle("/register", http.HandlerFunc(register))
+	// the above
+	//http.Handle("/loginery",http.HandlerFunc(loginery))
+	http.Handle("/login", http.HandlerFunc(login))
+	//http.Handle("/user_front", http.HandlerFunc(user_front))
 	http.Handle("/display", http.HandlerFunc(display))
 	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
 	http.ListenAndServe(":8080", nil)
@@ -60,7 +68,9 @@ func handle_upload(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	hashes[string(h.Sum(nil))] = name
-	fname := fmt.Sprintf(name + "." + ext)
+	//temp username: to be taken from db by sesion uuid
+	username := "temp_username"
+	fname := fmt.Sprintf(username + name + "." + ext)
 	// create new fileS
 	wd, err := os.Getwd()
 	if err != nil {
@@ -78,6 +88,44 @@ func handle_upload(res http.ResponseWriter, req *http.Request) {
 
 	tpl.ExecuteTemplate(res, "front.html", nil)
 
+}
+
+func register(res http.ResponseWriter, req *http.Request) {
+	name := req.FormValue("name")
+	password := req.FormValue("password")
+	//if isUser(name) {
+	//	err := tpl.ExecuteTemplate(res, "registery.html", name+" already exists")
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//	return
+	//}
+	InsertUser(name, password)
+	err := tpl.ExecuteTemplate(res, "front.html", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func login(res http.ResponseWriter, req *http.Request) {
+	//res.Header().Set("Content-Type", "text/html; charset=utf-8")
+	name := req.FormValue("name")
+	password := req.FormValue("password")
+	if isUserCreds(name, password) {
+		id := uuid.NewV4()
+		cookie := &http.Cookie{
+			Name:     "session",
+			Value:    id.String(),
+			HttpOnly: true,
+			MaxAge:   600 * 5,
+			Path:     "/",
+		}
+		redisSetSession(name, id.String())
+		http.SetCookie(res, cookie)
+		user_front(res, req)
+		return
+	}
+	tpl.ExecuteTemplate(res, "front.html", nil)
 }
 
 func display(res http.ResponseWriter, req *http.Request) {
