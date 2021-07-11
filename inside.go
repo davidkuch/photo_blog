@@ -14,11 +14,9 @@ func user_front(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	tmp := make([]string, 5)
-	tmp = append(tmp, "myfirst")
-	username := redisGetSession(uuid.String())
-	println(username)
-	//users_galleries := getUsersGalleries(username)
-	data := user_data{Name: username, Galleries: tmp}
+	username := redisGetSession(uuid.Value)
+	println("username by redis:" + username)
+	users_galleries := getUsersGalleries(username)
+	data := user_data{Name: username, Galleries: users_galleries}
 	tpl.ExecuteTemplate(res, "user_front.html", data)
 }

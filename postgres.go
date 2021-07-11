@@ -31,8 +31,16 @@ func connect() {
 	if err != nil {
 		panic(err)
 	}
-	println("got here!\n")
 }
+
+//func init() {
+//connect()
+//sqlstt := `create table galleries (username varchar(120), gallery_name varchar(120));`
+//	_, err := db.Exec(sqlstt)
+//	if err != nil {
+//		panic(err)
+//	}
+//}
 
 func InsertUser(name string, userpassword string) {
 	connect()
@@ -110,7 +118,7 @@ func getUsersGalleries(username string) []string {
 	connect()
 	var names = make([]string, 0)
 	sqlstt := `select gallery_name from galleries where username=$1;`
-	rows, err := db.Query(sqlstt)
+	rows, err := db.Query(sqlstt, username)
 	if err != nil {
 		// handle this error better than this
 		panic(err)

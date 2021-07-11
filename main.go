@@ -1,7 +1,6 @@
 package main
 
 import (
-	//	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
 	"hash"
@@ -35,7 +34,7 @@ func main() {
 	// the above
 	//http.Handle("/loginery",http.HandlerFunc(loginery))
 	http.Handle("/login", http.HandlerFunc(login))
-	//http.Handle("/user_front", http.HandlerFunc(user_front))
+	http.Handle("/user_front", http.HandlerFunc(user_front))
 	http.Handle("/display", http.HandlerFunc(display))
 	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
 	http.ListenAndServe(":8080", nil)
@@ -117,12 +116,13 @@ func login(res http.ResponseWriter, req *http.Request) {
 			Name:     "session",
 			Value:    id.String(),
 			HttpOnly: true,
-			MaxAge:   600 * 5,
+			MaxAge:   600000 * 5,
 			Path:     "/",
 		}
 		redisSetSession(name, id.String())
 		http.SetCookie(res, cookie)
-		user_front(res, req)
+		res.Header().Set("Location", "/user_front")
+		res.WriteHeader(http.StatusSeeOther)
 		return
 	}
 	tpl.ExecuteTemplate(res, "front.html", nil)
