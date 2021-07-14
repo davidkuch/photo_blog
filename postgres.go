@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -12,7 +13,7 @@ const (
 	port     = 5432
 	user     = "postgres"
 	password = "postgres"
-	dbname   = "notesdb"
+	dbname   = "photo_blog_db"
 )
 
 var db *sql.DB
@@ -33,19 +34,9 @@ func connect() {
 	}
 }
 
-//func init() {
-//connect()
-//sqlstt := `create table galleries (username varchar(120), gallery_name varchar(120));`
-//	_, err := db.Exec(sqlstt)
-//	if err != nil {
-//		panic(err)
-//	}
-//}
-
 func InsertUser(name string, userpassword string) {
 	connect()
-	sqlStatement := `
-INSERT INTO users (username,password)
+	sqlStatement := `INSERT INTO users (username,password)
 VALUES ($1, $2)`
 	_, err := db.Exec(sqlStatement, name, userpassword)
 	if err != nil {
@@ -55,10 +46,10 @@ VALUES ($1, $2)`
 
 func isUserCreds(name string, userpassword string) (stt bool) {
 	connect()
-	sqlstt := "select * from users where username=$1 and password=$2;"
-	var tmpname, tmppassword string
+	sqlstt := "select username from users where username=$1 and password=$2;"
+	var tmpname string
 	row := db.QueryRow(sqlstt, name, userpassword)
-	switch err := row.Scan(&tmpname, &tmppassword); err {
+	switch err := row.Scan(&tmpname); err {
 	case sql.ErrNoRows:
 		return false
 	case nil:
@@ -70,11 +61,9 @@ func isUserCreds(name string, userpassword string) (stt bool) {
 }
 
 func isUser(name string) bool {
-	println("flag 1 !! \n")
 	connect()
 	sqlstt := "select username from users where username=$1;"
 	var tmpname string
-	println("flag 3 !! \n")
 	row := db.QueryRow(sqlstt, name)
 	switch err := row.Scan(&tmpname); err {
 	case sql.ErrNoRows:
@@ -139,4 +128,14 @@ func getUsersGalleries(username string) []string {
 		panic(err)
 	}
 	return names
+}
+
+func set_new_gallery(gallery_name string, username string) {
+	connect()
+	date_created := time.Now()
+	sqlstt := `insert into galleries values ($1,$2,$3,$4)`
+	_, err := db.Exec(sqlstt, username, gallery_name, date_created, date_created)
+	if err != nil {
+		panic(err)
+	}
 }

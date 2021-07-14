@@ -3,10 +3,21 @@
 
 </head>
 <body>
-    here!!
-   your name: {{.Name}}
+    the Holl of {{.Name}}
+    <h2>My Galleries:</h2>
 <ul>
+    {{range .Galleries}}
+   <li> {{.}}</li>
+    {{end}}
+    {{if  not .Galleries}}
+      no Galleries present
+      {{end}}
     
-</ul>    
+</ul>
+<form action="/make_new_gallery"  method="POST">
+    <label for="gallery_name">create new gallery:</label>
+    <input type="text"  name="gallery_name">
+    <input type="submit">
+</form>  
 </body>
 </html>

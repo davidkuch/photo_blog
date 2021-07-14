@@ -37,6 +37,7 @@ func main() {
 	http.Handle("/user_front", http.HandlerFunc(user_front))
 	http.Handle("/display", http.HandlerFunc(display))
 	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
+	http.Handle("/create_new_gallery", http.HandlerFunc(create_new_gallery))
 	http.ListenAndServe(":8080", nil)
 }
 
