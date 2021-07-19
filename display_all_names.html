@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<head>
+    <title>photo Blog</title>
+</head>
+<body>
+    <ul>
+{{range .}}
+<li>{{.}}</li>
+    </ul>
+    {{end}}
+{{template "display_form"}}
+</body>
+</html>

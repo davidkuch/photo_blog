@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+    <h2>{{.Name}}'s private place</h2>
+    <h2>My Galleries:</h2>
+<ul>
+    {{range .Galleries}}
+   <li> {{.}}</li>
+    {{end}}
+    {{if  not .Galleries}}
+      no Galleries present
+      {{end}}
+    
+</ul>
+<form action="/create_new_gallery"  method="POST">
+    <label for="gallery_name">create new gallery:</label>
+    <input type="text"  name="gallery_name">
+    <input type="submit">
+</form>  
+</body>
+</html>

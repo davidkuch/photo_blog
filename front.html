@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <title>Photo Blog</title>
+</head>
+<body>
+<h1>Welcome to Photo Blog</h1>
+<img src="public/static/bird1.jpg" alt="front image">
+<a href="public/registry.html">register</a>
+<a href="public/login.html">login</a>
+
+<h2>upload your image:</h2>
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="nf">
+    <input type="submit">
+</form>
+{{template "display_form"}}
+<a href="/display_all_names">see all pictures names</a>
+</body>
+</html>
