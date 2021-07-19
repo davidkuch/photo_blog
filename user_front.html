@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <head>
 
@@ -20,4 +21,28 @@
     <input type="submit">
 </form>  
 </body>
+=======
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+    the Holl of {{.Name}}
+    <h2>My Galleries:</h2>
+<ul>
+    {{range .Galleries}}
+   <li> {{.}}</li>
+    {{end}}
+    {{if  not .Galleries}}
+      no Galleries present
+      {{end}}
+    
+</ul>
+<form action="/make_new_gallery"  method="POST">
+    <label for="gallery_name">create new gallery:</label>
+    <input type="text"  name="gallery_name">
+    <input type="submit">
+</form>  
+</body>
+>>>>>>> fcd9dd1ea813e41050a0084bc38b039bd560dfcd
 </html>
