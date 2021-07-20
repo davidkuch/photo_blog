@@ -20,7 +20,7 @@ var tpl *template.Template
 var hashes = make(map[string]string, 100)
 
 func init() {
-	tpl = template.Must(template.ParseGlob("./*.html"))
+	tpl = template.Must(template.ParseGlob("./templates/*.html"))
 
 }
 
