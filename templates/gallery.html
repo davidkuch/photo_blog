@@ -1,0 +1,28 @@
+<!DOCTYPE html>>
+<head>
+
+</head>
+<body>
+upload new picture
+    path
+    annotate
+    <h2>upload new image:</h2>
+    <form  action="/enter_gallery" method="post" enctype="multipart/form-data">
+        <input type="file" name="new_pic">
+        <label for="annotate">annotate:</label>
+        <input type="text" name="annotate">
+          <input type="submit">
+
+    </form>   
+
+see gallery data
+
+pics 
+pics
+...
+{{range $key,$val := .}}
+<img src="public/pics/{{$key}}" alt='{{$val}}'>
+<h3>{{$val}}</h3>
+{{end}}
+</body>
+</html>

@@ -7,13 +7,16 @@
     <h2>My Galleries:</h2>
 <ul>
     {{range .Galleries}}
-   <li> {{.}}</li>
-    {{end}}
-    {{if  not .Galleries}}
-      no Galleries present
-      {{end}}
-    
+   <li>
+       <form action="/enter_gallery" method="GET">
+    <input type="submit" value="{{.}}" name="enter_gallery_name"/>
+        </form> 
+    </li>
+   
 </ul>
+   {{end}}  
+  
+    
 <form action="/create_new_gallery"  method="POST">
     <label for="gallery_name">create new gallery:</label>
     <input type="text"  name="gallery_name">

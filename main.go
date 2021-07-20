@@ -1,16 +1,10 @@
 package main
 
 import (
-	"crypto/sha256"
-	"fmt"
 	"hash"
 	"html/template"
-	"io"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -28,63 +22,18 @@ func main() {
 	http.Handle("/", http.HandlerFunc(index))
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/public/", http.StripPrefix("/public", fs))
-	// i would try to make it static served
-	//http.Handle("/registry",http.HandlerFunc(register_place))
 	http.Handle("/register", http.HandlerFunc(register))
-	// the above
-	//http.Handle("/loginery",http.HandlerFunc(loginery))
 	http.Handle("/login", http.HandlerFunc(login))
 	http.Handle("/user_front", http.HandlerFunc(user_front))
 	http.Handle("/display", http.HandlerFunc(display))
 	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
 	http.Handle("/create_new_gallery", http.HandlerFunc(create_new_gallery))
+	http.Handle("/enter_gallery", http.HandlerFunc(enter_gallery))
+
 	http.ListenAndServe(":8080", nil)
 }
 
 func index(res http.ResponseWriter, req *http.Request) {
-	// process form submission
-	if req.Method == http.MethodPost {
-		handle_upload(res, req)
-		return
-	}
-	tpl.ExecuteTemplate(res, "front.html", nil)
-
-}
-
-func handle_upload(res http.ResponseWriter, req *http.Request) {
-	mf, fh, err := req.FormFile("nf")
-	if err != nil {
-		fmt.Println(err)
-	}
-	h := sha256.New()
-	if _, err := io.Copy(h, mf); err != nil {
-		log.Fatal(err)
-	}
-	defer mf.Close()
-	split := strings.Split(fh.Filename, ".")
-	name, ext := split[0], split[1]
-	if !isNew(h) {
-		tpl.ExecuteTemplate(res, "error.html", "pic already uploaded!")
-		return
-	}
-	hashes[string(h.Sum(nil))] = name
-	//temp username: to be taken from db by sesion uuid
-	username := "temp_username"
-	fname := fmt.Sprintf(username + name + "." + ext)
-	// create new fileS
-	wd, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-	}
-	path := filepath.Join(wd, "public", "pics", fname)
-	nf, err := os.Create(path)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer nf.Close()
-	// copy
-	mf.Seek(0, 0)
-	io.Copy(nf, mf)
 
 	tpl.ExecuteTemplate(res, "front.html", nil)
 

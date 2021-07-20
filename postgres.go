@@ -139,3 +139,42 @@ func set_new_gallery(gallery_name string, username string) {
 		panic(err)
 	}
 }
+
+func set_pic_annotate(username string, gallery_name string, pic_name string, annotate string) {
+	connect()
+	date_uploaded := time.Now()
+	sqlstt := `insert into pics values($1,$2,$3,$4,$5);`
+	_, err := db.Exec(sqlstt, pic_name, annotate, date_uploaded, username, gallery_name)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func get_pics_annotations(username string, gallery_name string) map[string]string {
+	connect()
+	pics := make(map[string]string, 5)
+
+	sqlstt := `select (pic_name,annotate) from pics where username=$1 and gallery_name=$2;`
+	rows, err := db.Query(sqlstt, username, gallery_name)
+	if err != nil {
+		// handle this error better than this
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var pic_name string
+		var annotate string
+		err = rows.Scan(&pic_name, &annotate)
+		if err != nil {
+			// handle this error
+			panic(err)
+		}
+		pics[pic_name] = annotate
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+	return pics
+}
