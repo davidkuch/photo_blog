@@ -45,7 +45,9 @@ func enter_gallery(res http.ResponseWriter, req *http.Request) {
 	println("got here! \n")
 	username := get_username_session(req)
 	if req.Method == http.MethodPost {
-		gallery_name := req.FormValue("enter_gallery_name")
+		//error here: no such value given. we are uploading pic,
+		// from inside gallery.html:where gallery name comes from to here?
+		//gallery_name := req.FormValue("enter_gallery_name")
 		annotate := req.FormValue("annotate")
 		handle_pic_upload(res, req, username, gallery_name, annotate)
 	}
