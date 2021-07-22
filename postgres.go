@@ -160,15 +160,16 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 		// handle this error better than this
 		panic(err)
 	}
-	defer rows.Close()
+
 	for rows.Next() {
 		var pic_name string
 		var annotate string
-		err = rows.Scan(&pic_name, &annotate)
+		err = rows.Scan(&pic_name)
 		if err != nil {
 			// handle this error
 			panic(err)
 		}
+		annotate = "temp"
 		pics[pic_name] = annotate
 	}
 	// get any error encountered during iteration
@@ -176,5 +177,6 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 	if err != nil {
 		panic(err)
 	}
+	defer rows.Close()
 	return pics
 }

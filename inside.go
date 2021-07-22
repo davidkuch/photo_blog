@@ -16,7 +16,7 @@ type user_data struct {
 	Galleries []string
 }
 
-func get_username_session(req *http.Request) string {
+func get_redis_cookie(req *http.Request, cookie_name string) string {
 	uuid, err := req.Cookie("session")
 	if err != nil {
 		panic(err)
@@ -26,14 +26,14 @@ func get_username_session(req *http.Request) string {
 }
 
 func user_front(res http.ResponseWriter, req *http.Request) {
-	username := get_username_session(req)
+	username := get_redis_cookie(req, "session")
 	users_galleries := getUsersGalleries(username)
 	data := user_data{Name: username, Galleries: users_galleries}
 	tpl.ExecuteTemplate(res, "user_front.html", data)
 }
 
 func create_new_gallery(res http.ResponseWriter, req *http.Request) {
-	username := get_username_session(req)
+	username := get_redis_cookie(req, "session")
 	gallery_name := req.FormValue("gallery_name")
 	set_new_gallery(gallery_name, username)
 	res.Header().Set("Location", "/user_front")
@@ -42,16 +42,24 @@ func create_new_gallery(res http.ResponseWriter, req *http.Request) {
 
 // rout to gallery.html
 func enter_gallery(res http.ResponseWriter, req *http.Request) {
-	println("got here! \n")
-	username := get_username_session(req)
-	if req.Method == http.MethodPost {
-		//error here: no such value given. we are uploading pic,
-		// from inside gallery.html:where gallery name comes from to here?
-		//gallery_name := req.FormValue("enter_gallery_name")
-		annotate := req.FormValue("annotate")
-		handle_pic_upload(res, req, username, gallery_name, annotate)
+	username := get_redis_cookie(req, "session")
+	var gallery_name string
+	if req.Method == http.MethodGet {
+		gallery_name = req.FormValue("enter_gallery_name")
+		cookie := &http.Cookie{
+			Name:     "gallery",
+			Value:    gallery_name,
+			HttpOnly: true,
+			MaxAge:   600000 * 5,
+			Path:     "/",
+		}
+		//do we use that?
+		redisSetSession(username, gallery_name)
+		http.SetCookie(res, cookie)
 	}
-	gallery_name := req.FormValue("enter_gallery_name")
+	if req.Method == http.MethodPost {
+		handle_pic_upload(res, req)
+	}
 	pics := get_pics_annotations(username, gallery_name)
 	data := make(map[string]string)
 	for pic_name, annotate := range pics {
@@ -61,7 +69,7 @@ func enter_gallery(res http.ResponseWriter, req *http.Request) {
 	tpl.ExecuteTemplate(res, "gallery.html", data)
 }
 
-func handle_pic_upload(res http.ResponseWriter, req *http.Request, username string, gallery_name string, annotate string) {
+func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	mf, fh, err := req.FormFile("new_pic")
 	if err != nil {
 		fmt.Println(err)
@@ -78,6 +86,12 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request, username stri
 		return
 	}
 	hashes[string(h.Sum(nil))] = name
+	username := get_redis_cookie(req, "session")
+	gallery_name_cookie, err := req.Cookie("gallery")
+	if err != nil {
+		panic(err)
+	}
+	gallery_name := gallery_name_cookie.Value
 	fname := fmt.Sprintf(username + "#" + gallery_name + "#" + name + "." + ext)
 	// create new fileS
 	wd, err := os.Getwd()
@@ -93,7 +107,8 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request, username stri
 	// copy
 	mf.Seek(0, 0)
 	io.Copy(nf, mf)
+	annotate := req.FormValue("annotate")
 	set_pic_annotate(username, gallery_name, name, annotate)
-	tpl.ExecuteTemplate(res, "gallery.html", nil)
-
+	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)
+	res.WriteHeader(http.StatusSeeOther)
 }
