@@ -1,7 +1,7 @@
 package main
 
 import (
-	"crypto/sha256"
+	"crypto/sha1"
 	"fmt"
 	"io"
 	"log"
@@ -61,12 +61,12 @@ func enter_gallery(res http.ResponseWriter, req *http.Request) {
 		handle_pic_upload(res, req)
 	}
 	pics := get_pics_annotations(username, gallery_name)
-	data := make(map[string]string)
-	for pic_name, annotate := range pics {
-		fullname := fmt.Sprintf(username + "#" + gallery_name + "#" + pic_name)
-		data[fullname] = annotate
-	}
-	tpl.ExecuteTemplate(res, "gallery.html", data)
+	//data := make(map[string]string)
+	//	for pic_name, annotate := range pics {
+	//		fullname := fmt.Sprintf(pic_name+".jpg")
+	//	data[fullname] = annotate
+	//	}
+	tpl.ExecuteTemplate(res, "gallery.html", pics)
 }
 
 func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
@@ -74,25 +74,20 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	h := sha256.New()
+	h := sha1.New()
 	if _, err := io.Copy(h, mf); err != nil {
 		log.Fatal(err)
 	}
 	defer mf.Close()
 	split := strings.Split(fh.Filename, ".")
-	name, ext := split[0], split[1]
-	if !isNew(h) {
-		tpl.ExecuteTemplate(res, "error.html", "pic already uploaded!")
-		return
-	}
-	hashes[string(h.Sum(nil))] = name
+	ext := split[1]
 	username := get_redis_cookie(req, "session")
 	gallery_name_cookie, err := req.Cookie("gallery")
 	if err != nil {
 		panic(err)
 	}
 	gallery_name := gallery_name_cookie.Value
-	fname := fmt.Sprintf(username + "#" + gallery_name + "#" + name + "." + ext)
+	fname := fmt.Sprintf("%x", h.Sum(nil)) + "." + ext
 	// create new fileS
 	wd, err := os.Getwd()
 	if err != nil {
@@ -108,7 +103,7 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	mf.Seek(0, 0)
 	io.Copy(nf, mf)
 	annotate := req.FormValue("annotate")
-	set_pic_annotate(username, gallery_name, name, annotate)
+	set_pic_annotate(username, gallery_name, fname, annotate)
 	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)
 	res.WriteHeader(http.StatusSeeOther)
 }

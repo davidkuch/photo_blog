@@ -154,7 +154,7 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 	connect()
 	pics := make(map[string]string, 5)
 
-	sqlstt := `select (pic_name,annotate) from pics where username=$1 and gallery_name=$2;`
+	sqlstt := `select pic_name,annotate from pics where username=$1 and gallery_name=$2`
 	rows, err := db.Query(sqlstt, username, gallery_name)
 	if err != nil {
 		// handle this error better than this
@@ -164,12 +164,11 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 	for rows.Next() {
 		var pic_name string
 		var annotate string
-		err = rows.Scan(&pic_name)
+		err = rows.Scan(&pic_name, &annotate)
 		if err != nil {
 			// handle this error
 			panic(err)
 		}
-		annotate = "temp"
 		pics[pic_name] = annotate
 	}
 	// get any error encountered during iteration
