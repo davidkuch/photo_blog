@@ -4,9 +4,7 @@
 </head>
 <body>
     <h2>gallery</h2>
-upload new picture
-    path
-    annotate
+
     <h2>upload new image:</h2>
     <form  action="/enter_gallery" method="POST" enctype="multipart/form-data">
         <input type="file" name="new_pic">
@@ -18,12 +16,12 @@ upload new picture
 
 see gallery data
 
-pics 
-pics
-...
+
 {{range $key,$val := .}}
+<section>
 <img src="public/pics/{{$key}}" alt='{{$val}}'>
 <h3>{{$val}}</h3>
+<hr>
 {{end}}
 </body>
 </html>
