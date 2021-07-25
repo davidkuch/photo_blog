@@ -24,12 +24,13 @@ func main() {
 	http.Handle("/public/", http.StripPrefix("/public", fs))
 	http.Handle("/register", http.HandlerFunc(register))
 	http.Handle("/login", http.HandlerFunc(login))
+	http.Handle("/logout", http.HandlerFunc(logout))
 	http.Handle("/user_front", http.HandlerFunc(user_front))
 	http.Handle("/display", http.HandlerFunc(display))
 	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
 	http.Handle("/create_new_gallery", http.HandlerFunc(create_new_gallery))
 	http.Handle("/enter_gallery", http.HandlerFunc(enter_gallery))
-
+	http.Handle("/remove_pic", http.HandlerFunc(remove_pic))
 	http.ListenAndServe(":8080", nil)
 }
 

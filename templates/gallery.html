@@ -4,7 +4,7 @@
 </head>
 <body>
     <h2>gallery</h2>
-
+{{template "logout"}}
     <h2>upload new image:</h2>
     <form  action="/enter_gallery" method="POST" enctype="multipart/form-data">
         <input type="file" name="new_pic">
@@ -19,8 +19,10 @@ see gallery data
 
 {{range $key,$val := .}}
 <section>
-<img src="public/pics/{{$key}}" alt='{{$val}}'>
-<h3>{{$val}}</h3>
+<img src="public/pics/{{$key}}" alt='{{$val}}'> <section>{{$val}}</section>
+<form action="/remove_pic" method="GET">
+    <input type="submit" value="{{$key}}"  name="remove_pic"/>
+        </form> 
 <hr>
 {{end}}
 </body>

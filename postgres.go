@@ -179,3 +179,12 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 	defer rows.Close()
 	return pics
 }
+
+func delete_pic(pic_name string) {
+	connect()
+	sqlstt := `delete from pics where pic_name=$1`
+	_, err := db.Exec(sqlstt, pic_name)
+	if err != nil {
+		panic(err)
+	}
+}
