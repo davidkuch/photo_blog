@@ -35,7 +35,12 @@ func remove_pic(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	res.Header().Set("Location", "/enter_gallery")
+	gallery_name_cookie, err := req.Cookie("gallery")
+	if err != nil {
+		panic(err)
+	}
+	gallery_name := gallery_name_cookie.Value
+	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)
 	res.WriteHeader(http.StatusSeeOther)
 
 }
