@@ -180,10 +180,21 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 	return pics
 }
 
-func delete_pic(pic_name string) {
+func delete_pics(pics []string) {
 	connect()
-	sqlstt := `delete from pics where pic_name=$1`
-	_, err := db.Exec(sqlstt, pic_name)
+	for _, pic := range pics {
+		sqlstt := `delete from pics where pic_name=$1`
+		_, err := db.Exec(sqlstt, pic)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func delete_gallery(gallery string) {
+	connect()
+	sqlstt := `delete from galleries where gallery_name=$1`
+	_, err := db.Exec(sqlstt, gallery)
 	if err != nil {
 		panic(err)
 	}

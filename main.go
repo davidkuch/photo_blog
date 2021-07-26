@@ -31,6 +31,7 @@ func main() {
 	http.Handle("/create_new_gallery", http.HandlerFunc(create_new_gallery))
 	http.Handle("/enter_gallery", http.HandlerFunc(enter_gallery))
 	http.Handle("/remove_pic", http.HandlerFunc(remove_pic))
+	http.Handle("/remove_gallery", http.HandlerFunc(remove_gallery))
 	http.ListenAndServe(":8080", nil)
 }
 
