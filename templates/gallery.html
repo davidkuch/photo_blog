@@ -1,6 +1,6 @@
-<!DOCTYPE html>>
+<!DOCTYPE html>
 <head>
-
+<link rel="stylesheet" href="public/static/gallery.css">
 </head>
 <body>
     <h2>gallery</h2>
@@ -18,12 +18,13 @@ see gallery data
 
 
 {{range $key,$val := .}}
-<section>
-<img src="public/pics/{{$key}}" alt='{{$val}}'> <section>{{$val}}</section>
+<div>
+<img src="public/pics/{{$key}}" alt='{{$val}}'> <aside>{{$val}}</aside>
 <form action="/remove_pic" method="GET">
     <input type="submit" value="{{$key}}"  name="remove_pic"/>
-        </form> 
-<hr>
+        </form>
+        </div> 
+
 {{end}}
 </body>
 </html>

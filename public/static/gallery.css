@@ -1,0 +1,12 @@
+body {
+    background-color: aliceblue;
+}
+
+div {
+    height: 300px;
+    border: 1px solid black;
+}
+
+img {
+    border: 1px groove oldlace;
+}

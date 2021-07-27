@@ -79,5 +79,4 @@ func remove_gallery(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Location", "/user_front")
 	res.WriteHeader(http.StatusSeeOther)
-
 }
