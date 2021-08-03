@@ -5,8 +5,10 @@ body {
 div {
     height: 300px;
     border: 1px solid black;
+    border-radius: 5%;
 }
 
 img {
     border: 1px groove oldlace;
+    border-radius: 100%;
 }

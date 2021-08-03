@@ -199,3 +199,33 @@ func delete_gallery(gallery string) {
 		panic(err)
 	}
 }
+
+//gives slice with names of all published galleries and their owners
+//simple sql
+func get_published_galleries() map[string]string {
+	connect()
+	sqlstt := `select gallery_name,username from galleries where stat='published' `
+	rows, err := db.Query(sqlstt)
+	if err != nil {
+		// handle this error better than this
+		panic(err)
+	}
+	result := make(map[string]string)
+	for rows.Next() {
+		var gallery_name string
+		var username string
+		err = rows.Scan(&gallery_name, &username)
+		if err != nil {
+			// handle this error
+			panic(err)
+		}
+		result[gallery_name] = username
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	return result
+}

@@ -35,8 +35,47 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func index(res http.ResponseWriter, req *http.Request) {
+//type rcv struct{
+//	first map[string]string
+//	second
+//}
 
+func index(res http.ResponseWriter, req *http.Request) {
+	//adding random pic.
+	// make a call-> store the response json
+	// parse the json: take the first array object,
+	//	respi, err := http.Get("https://api.thecatapi.com/v1/images/search")
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	body, err := ioutil.ReadAll(respi.Body)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//println(string(body))
+	//	defer respi.Body.Close()
+	//	var temp interface{}
+	//	err = json.Unmarshal(body, &temp)
+	//	if err != nil {
+	///		panic(err)
+	//}
+	//println(string(body))
+	//m := temp.(map[string]interface{})
+	//for k, v := range m {
+	//	switch vv := v.(type) {
+	//	case string:
+	//		fmt.Println(k, "is string", vv)
+	//	case int:
+	//		fmt.Println(k, "is int", vv)
+	//	case []interface{}:
+	//		fmt.Println(k, "is an array:")
+	//		for i, u := range vv {
+	//			fmt.Println(i, u)
+	//		}
+	//	default:
+	//		fmt.Println(k, "is of a type I don't know how to handle")
+	//	}
+	//}
 	tpl.ExecuteTemplate(res, "front.html", nil)
 
 }
