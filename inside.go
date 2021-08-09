@@ -107,3 +107,12 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)
 	res.WriteHeader(http.StatusSeeOther)
 }
+
+//to make a gallery public
+// required actions:
+//giver gallery name
+// change stat to 'public'
+//simple sql
+func publish() {
+
+}

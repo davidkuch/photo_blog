@@ -1,0 +1,13 @@
+{{define "public_galleries"}}
+<ul>
+{{range $key,$val := .}}
+<li>$key by $val</li>
+change to calling method here->
+<form action="/display?gallery_name="+$key+"&"+"user="+$val method="GET">
+    <input type="submit" value=""  name="gallery_user"/>
+        </form>
+
+
+
+{{end}}
+</ul>
