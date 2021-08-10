@@ -12,7 +12,12 @@
         <input type="text" name="annotate">
           <input type="submit">
 
-    </form>   
+    </form>  
+    
+to publish gallery:
+<form action="/publish_gallery" method="GET">
+    <input type="submit" value="publish_gallery1"  name="publish_gallery2"/>
+        </form>
 
 see gallery data
 
@@ -20,9 +25,11 @@ see gallery data
 {{range $key,$val := .}}
 <div>
 <img src="public/pics/{{$key}}" alt='{{$val}}'> <aside>{{$val}}</aside>
+to remove_pic
 <form action="/remove_pic" method="GET">
     <input type="submit" value="{{$key}}"  name="remove_pic"/>
         </form>
+
         </div> 
 
 {{end}}

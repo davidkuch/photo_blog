@@ -108,11 +108,19 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusSeeOther)
 }
 
-//to make a gallery public
-// required actions:
-//giver gallery name
-// change stat to 'public'
-//simple sql
-func publish() {
+func publish_gallery(res http.ResponseWriter, req *http.Request) {
+	//must have:
+	username := get_redis_cookie(req, "session")
+	gallery_name_cookie, err := req.Cookie("gallery")
+	if err != nil {
+		panic(err)
+	}
+	gallery_name := gallery_name_cookie.Value
+	// action:
+	publish(username, gallery_name)
+
+	//return to user
+	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)
+	res.WriteHeader(http.StatusSeeOther)
 
 }

@@ -200,8 +200,7 @@ func delete_gallery(gallery string) {
 	}
 }
 
-//gives slice with names of all published galleries and their owners
-//simple sql
+//gives map with names of all published galleries and their owners
 func get_published_galleries() map[string]string {
 	connect()
 	sqlstt := `select gallery_name,username from galleries where stat='published' `
@@ -228,4 +227,17 @@ func get_published_galleries() map[string]string {
 	}
 	defer rows.Close()
 	return result
+}
+
+//to make a gallery public
+//given gallery name and username
+// change stat to 'public'
+func publish(username, gallery_name string) {
+	connect()
+	sqlstt := `update galleries set stat= 'published' where username=$1 and gallery_name=$2`
+	_, err := db.Exec(sqlstt, username, gallery_name)
+	if err != nil {
+		panic(err)
+	}
+
 }

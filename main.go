@@ -32,6 +32,8 @@ func main() {
 	http.Handle("/enter_gallery", http.HandlerFunc(enter_gallery))
 	http.Handle("/remove_pic", http.HandlerFunc(remove_pic))
 	http.Handle("/remove_gallery", http.HandlerFunc(remove_gallery))
+	http.Handle("/publish_gallery", http.HandlerFunc(publish_gallery))
+	http.Handle("/public_galleries", http.HandlerFunc(public_galleries))
 	http.ListenAndServe(":8080", nil)
 }
 
