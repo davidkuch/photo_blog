@@ -26,7 +26,6 @@ func main() {
 	http.Handle("/login", http.HandlerFunc(login))
 	http.Handle("/logout", http.HandlerFunc(logout))
 	http.Handle("/user_front", http.HandlerFunc(user_front))
-	http.Handle("/display", http.HandlerFunc(display))
 	http.Handle("/display_all_names", http.HandlerFunc(display_all_names))
 	http.Handle("/create_new_gallery", http.HandlerFunc(create_new_gallery))
 	http.Handle("/enter_gallery", http.HandlerFunc(enter_gallery))
@@ -34,6 +33,8 @@ func main() {
 	http.Handle("/remove_gallery", http.HandlerFunc(remove_gallery))
 	http.Handle("/publish_gallery", http.HandlerFunc(publish_gallery))
 	http.Handle("/public_galleries", http.HandlerFunc(public_galleries))
+	http.Handle("/display_published", http.HandlerFunc(display_published))
+
 	http.ListenAndServe(":8080", nil)
 }
 

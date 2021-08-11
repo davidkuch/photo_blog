@@ -7,10 +7,11 @@
 
 <ul>
 {{range $key,$val := .}}
-<li>{{$key}} by {{$val}}</li>
-
-
-
+<li>{{$key}} by {{$val}}
+    <form action="/display_published" method="GET">
+        <input type="submit" value="{{$key}}!{{$val}}" name="creds">
+            </form>
+</li>
 
 {{end}}
 
