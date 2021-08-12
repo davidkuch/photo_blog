@@ -1,8 +1,16 @@
 <!DOCTYPE html>
 <head>
 <title>Photo Blog</title>
+<link rel="stylesheet" href="public/static/gallery.css">
+
 </head>
 <body>
-<img src="{{.}}" alt="pic">
+   <h2> gallery {{.Gallery_name}}</h2>
+<h2>by {{.Owner}}</h2>
+<hr>
+    {{range $key,$val := .Pics}}
+    <div>
+    <img src="public/pics/{{$key}}" alt='{{$val}}'> <aside>{{$val}}</aside></div>
+    {{end}}
 </body>
 </html>
