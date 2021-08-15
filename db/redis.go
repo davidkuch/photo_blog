@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"context"
@@ -16,14 +16,14 @@ var rdb = redis.NewClient(&redis.Options{
 	DB:       0,  // use default DB
 })
 
-func redisSetSession(name string, uuid string) {
+func RedisSetSession(name string, uuid string) {
 	err := rdb.Set(ctx, uuid, name, 0).Err()
 	if err != nil {
 		panic(err)
 	}
 }
 
-func redisGetSession(uuid string) string {
+func RedisGetSession(uuid string) string {
 	name, err := rdb.Get(ctx, uuid).Result()
 	if err != nil {
 		fmt.Println(err)

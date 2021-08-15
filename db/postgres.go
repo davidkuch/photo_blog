@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"database/sql"
@@ -44,7 +44,7 @@ VALUES ($1, $2)`
 	}
 }
 
-func isUserCreds(name string, userpassword string) (stt bool) {
+func IsUserCreds(name string, userpassword string) (stt bool) {
 	connect()
 	sqlstt := "select username from users where username=$1 and password=$2;"
 	var tmpname string
@@ -60,7 +60,7 @@ func isUserCreds(name string, userpassword string) (stt bool) {
 
 }
 
-func isUser(name string) bool {
+func IsUser(name string) bool {
 	connect()
 	sqlstt := "select username from users where username=$1;"
 	var tmpname string
@@ -76,7 +76,7 @@ func isUser(name string) bool {
 
 }
 
-func getNames() []string {
+func GetNames() []string {
 	connect()
 	var names = make([]string, 0)
 	sqlstt := `select username from users`
@@ -103,7 +103,7 @@ func getNames() []string {
 	return names
 }
 
-func getUsersGalleries(username string) []string {
+func GetUsersGalleries(username string) []string {
 	connect()
 	var names = make([]string, 0)
 	sqlstt := `select gallery_name from galleries where username=$1;`
@@ -130,7 +130,7 @@ func getUsersGalleries(username string) []string {
 	return names
 }
 
-func set_new_gallery(gallery_name string, username string) {
+func Set_new_gallery(gallery_name string, username string) {
 	connect()
 	date_created := time.Now()
 	sqlstt := `insert into galleries values ($1,$2,$3,$4)`
@@ -140,7 +140,7 @@ func set_new_gallery(gallery_name string, username string) {
 	}
 }
 
-func set_pic_annotate(username string, gallery_name string, pic_name string, annotate string) {
+func Set_pic_annotate(username string, gallery_name string, pic_name string, annotate string) {
 	connect()
 	date_uploaded := time.Now()
 	sqlstt := `insert into pics values($1,$2,$3,$4,$5);`
@@ -150,7 +150,7 @@ func set_pic_annotate(username string, gallery_name string, pic_name string, ann
 	}
 }
 
-func get_pics_annotations(username string, gallery_name string) map[string]string {
+func Get_pics_annotations(username string, gallery_name string) map[string]string {
 	connect()
 	pics := make(map[string]string, 5)
 
@@ -180,7 +180,7 @@ func get_pics_annotations(username string, gallery_name string) map[string]strin
 	return pics
 }
 
-func delete_pics(pics []string) {
+func Delete_pics(pics []string) {
 	connect()
 	for _, pic := range pics {
 		sqlstt := `delete from pics where pic_name=$1`
@@ -191,7 +191,7 @@ func delete_pics(pics []string) {
 	}
 }
 
-func delete_gallery(gallery string) {
+func Delete_gallery(gallery string) {
 	connect()
 	sqlstt := `delete from galleries where gallery_name=$1`
 	_, err := db.Exec(sqlstt, gallery)
@@ -201,7 +201,7 @@ func delete_gallery(gallery string) {
 }
 
 //gives map with names of all published galleries and their owners
-func get_published_galleries() map[string]string {
+func Get_published_galleries() map[string]string {
 	connect()
 	sqlstt := `select gallery_name,username from galleries where stat='published' `
 	rows, err := db.Query(sqlstt)
@@ -232,7 +232,7 @@ func get_published_galleries() map[string]string {
 //to make a gallery public
 //given gallery name and username
 // change stat to 'public'
-func publish(username, gallery_name string) {
+func Publish(username, gallery_name string) {
 	connect()
 	sqlstt := `update galleries set stat= 'published' where username=$1 and gallery_name=$2`
 	_, err := db.Exec(sqlstt, username, gallery_name)

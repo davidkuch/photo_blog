@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"crypto/sha1"
@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"photo_blog/db"
 	"strings"
 )
 
@@ -16,33 +17,33 @@ type user_data struct {
 	Galleries []string
 }
 
-func get_redis_cookie(req *http.Request, cookie_name string) string {
+func Get_redis_cookie(req *http.Request, cookie_name string) string {
 	uuid, err := req.Cookie("session")
 	if err != nil {
 		panic(err)
 	}
-	username := redisGetSession(uuid.Value)
+	username := db.RedisGetSession(uuid.Value)
 	return username
 }
 
-func user_front(res http.ResponseWriter, req *http.Request) {
-	username := get_redis_cookie(req, "session")
-	users_galleries := getUsersGalleries(username)
+func User_front(res http.ResponseWriter, req *http.Request) {
+	username := Get_redis_cookie(req, "session")
+	users_galleries := db.GetUsersGalleries(username)
 	data := user_data{Name: username, Galleries: users_galleries}
 	tpl.ExecuteTemplate(res, "user_front.html", data)
 }
 
-func create_new_gallery(res http.ResponseWriter, req *http.Request) {
-	username := get_redis_cookie(req, "session")
+func Create_new_gallery(res http.ResponseWriter, req *http.Request) {
+	username := Get_redis_cookie(req, "session")
 	gallery_name := req.FormValue("gallery_name")
-	set_new_gallery(gallery_name, username)
+	db.Set_new_gallery(gallery_name, username)
 	res.Header().Set("Location", "/user_front")
 	res.WriteHeader(http.StatusSeeOther)
 }
 
 // rout to gallery.html
-func enter_gallery(res http.ResponseWriter, req *http.Request) {
-	username := get_redis_cookie(req, "session")
+func Enter_gallery(res http.ResponseWriter, req *http.Request) {
+	username := Get_redis_cookie(req, "session")
 	var gallery_name string
 	if req.Method == http.MethodGet {
 		gallery_name = req.FormValue("enter_gallery_name")
@@ -54,22 +55,17 @@ func enter_gallery(res http.ResponseWriter, req *http.Request) {
 			Path:     "/",
 		}
 		//do we use that?
-		redisSetSession(username, gallery_name)
+		db.RedisSetSession(username, gallery_name)
 		http.SetCookie(res, cookie)
 	}
 	if req.Method == http.MethodPost {
-		handle_pic_upload(res, req)
+		Handle_pic_upload(res, req)
 	}
-	pics := get_pics_annotations(username, gallery_name)
-	//data := make(map[string]string)
-	//	for pic_name, annotate := range pics {
-	//		fullname := fmt.Sprintf(pic_name+".jpg")
-	//	data[fullname] = annotate
-	//	}
+	pics := db.Get_pics_annotations(username, gallery_name)
 	tpl.ExecuteTemplate(res, "gallery.html", pics)
 }
 
-func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
+func Handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	mf, fh, err := req.FormFile("new_pic")
 	if err != nil {
 		fmt.Println(err)
@@ -81,7 +77,7 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	defer mf.Close()
 	split := strings.Split(fh.Filename, ".")
 	ext := split[1]
-	username := get_redis_cookie(req, "session")
+	username := Get_redis_cookie(req, "session")
 	gallery_name_cookie, err := req.Cookie("gallery")
 	if err != nil {
 		panic(err)
@@ -103,21 +99,21 @@ func handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	mf.Seek(0, 0)
 	io.Copy(nf, mf)
 	annotate := req.FormValue("annotate")
-	set_pic_annotate(username, gallery_name, fname, annotate)
+	db.Set_pic_annotate(username, gallery_name, fname, annotate)
 	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)
 	res.WriteHeader(http.StatusSeeOther)
 }
 
-func publish_gallery(res http.ResponseWriter, req *http.Request) {
+func Publish_gallery(res http.ResponseWriter, req *http.Request) {
 	//must have:
-	username := get_redis_cookie(req, "session")
+	username := Get_redis_cookie(req, "session")
 	gallery_name_cookie, err := req.Cookie("gallery")
 	if err != nil {
 		panic(err)
 	}
 	gallery_name := gallery_name_cookie.Value
 	// action:
-	publish(username, gallery_name)
+	db.Publish(username, gallery_name)
 
 	//return to user
 	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery_name)

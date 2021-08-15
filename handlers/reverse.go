@@ -1,14 +1,15 @@
-package main
+package handlers
 
 import (
 	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
+	"photo_blog/db"
 	"time"
 )
 
-func logout(res http.ResponseWriter, req *http.Request) {
+func Logout(res http.ResponseWriter, req *http.Request) {
 	c := &http.Cookie{
 		Name:    "session",
 		Value:   "",
@@ -22,10 +23,10 @@ func logout(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusSeeOther)
 }
 
-func remove_pic(res http.ResponseWriter, req *http.Request) {
+func Remove_pic(res http.ResponseWriter, req *http.Request) {
 	pic_name := req.FormValue("remove_pic")
 	//path :="C:\Users\david\photo_blog\public\pics\"
-	delete_pics([]string{pic_name})
+	db.Delete_pics([]string{pic_name})
 	wd, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
@@ -45,22 +46,22 @@ func remove_pic(res http.ResponseWriter, req *http.Request) {
 
 }
 
-func remove_gallery(res http.ResponseWriter, req *http.Request) {
+func Remove_gallery(res http.ResponseWriter, req *http.Request) {
 	//can't use cookie: assume user not in  gallery
 	gallery_name := req.FormValue("gallery_name")
 	//actions:
 	//	1- delete gallery from galleries table
 	//	2- delete pics info from pics table- extract slice of pic names before
 	//	3- delete pics files from 'public', using info from pics table before deletion
-	user_name := get_redis_cookie(req, "session")
-	pics_annotations := get_pics_annotations(user_name, gallery_name)
+	user_name := Get_redis_cookie(req, "session")
+	pics_annotations := db.Get_pics_annotations(user_name, gallery_name)
 	pics := make([]string, len(pics_annotations))
 	i := 0
 	for pic := range pics_annotations {
 		pics[i] = pic
 		i++
 	}
-	delete_pics(pics)
+	db.Delete_pics(pics)
 
 	wd, err := os.Getwd()
 	if err != nil {
@@ -75,7 +76,7 @@ func remove_gallery(res http.ResponseWriter, req *http.Request) {
 		}
 
 	}
-	delete_gallery(gallery_name)
+	db.Delete_gallery(gallery_name)
 
 	res.Header().Set("Location", "/user_front")
 	res.WriteHeader(http.StatusSeeOther)
