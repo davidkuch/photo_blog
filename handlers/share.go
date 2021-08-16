@@ -15,7 +15,14 @@ type Published_gallery struct {
 
 //display a list of public galleries with creators name as links
 func Public_galleries(res http.ResponseWriter, req *http.Request) {
-	data := db.Get_published_galleries()
+	var data map[string]string
+	if req.FormValue("name") != "" {
+		name := req.FormValue("name")
+		data = db.Get_shared(name)
+
+	} else {
+		data = db.Get_published_galleries()
+	}
 	fmt.Println(data)
 	tpl.ExecuteTemplate(res, "public_galleries.html", data)
 
@@ -32,4 +39,19 @@ func Display_published(res http.ResponseWriter, req *http.Request) {
 	data := Published_gallery{username, gallery_name, pics}
 	tpl.ExecuteTemplate(res, "public_gallery.html", data)
 
+}
+
+//shares a gallery with another user or group
+// takes: (gallery id?)gallery name, owner name, others name,level
+// action: insert to "shared" table in db
+func Share_gallery(res http.ResponseWriter, req *http.Request) {
+	owner := Get_redis_cookie(req, "session")
+	gallery_name_cookie, err := req.Cookie("gallery")
+	if err != nil {
+		panic(err)
+	}
+	gallery := gallery_name_cookie.Value
+	other := req.FormValue("other")
+	level := "temp"
+	db.Share_gallery(owner, other, gallery, level)
 }

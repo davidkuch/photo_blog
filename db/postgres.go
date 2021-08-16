@@ -241,3 +241,41 @@ func Publish(username, gallery_name string) {
 	}
 
 }
+
+func Share_gallery(owner, other, gallery, level string) {
+	connect()
+	date := time.Now()
+	sqlstt := `insert into shared values($1,$2,$3,$4,$5)`
+	_, err := db.Exec(sqlstt, owner, other, gallery, date, level)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func Get_shared(name string) map[string]string {
+	connect()
+	sqlstt := `select owner,gallery from shared where other=$1`
+	rows, err := db.Query(sqlstt, name)
+	if err != nil {
+		// handle this error better than this
+		panic(err)
+	}
+	result := make(map[string]string)
+	for rows.Next() {
+		var gallery_name string
+		var username string
+		err = rows.Scan(&gallery_name, &username)
+		if err != nil {
+			// handle this error
+			panic(err)
+		}
+		result[gallery_name] = username
+	}
+	// get any error encountered during iteration
+	err = rows.Err()
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	return result
+}
