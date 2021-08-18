@@ -254,7 +254,7 @@ func Share_gallery(owner, other, gallery, level string) {
 
 func Get_shared(name string) map[string]string {
 	connect()
-	sqlstt := `select owner,gallery from shared where other=$1`
+	sqlstt := `select gallery,owner from shared where other=$1`
 	rows, err := db.Query(sqlstt, name)
 	if err != nil {
 		// handle this error better than this

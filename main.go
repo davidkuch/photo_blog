@@ -20,6 +20,6 @@ func main() {
 	http.Handle("/publish_gallery", http.HandlerFunc(handlers.Publish_gallery))
 	http.Handle("/public_galleries", http.HandlerFunc(handlers.Public_galleries))
 	http.Handle("/display_published", http.HandlerFunc(handlers.Display_published))
-
+	http.Handle("/share_gallery", http.HandlerFunc(handlers.Share_gallery))
 	http.ListenAndServe(":8080", nil)
 }

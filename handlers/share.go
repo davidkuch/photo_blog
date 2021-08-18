@@ -54,4 +54,7 @@ func Share_gallery(res http.ResponseWriter, req *http.Request) {
 	other := req.FormValue("other")
 	level := "temp"
 	db.Share_gallery(owner, other, gallery, level)
+	//return to user
+	res.Header().Set("Location", "/enter_gallery?enter_gallery_name="+gallery)
+	res.WriteHeader(http.StatusSeeOther)
 }
