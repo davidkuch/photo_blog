@@ -17,15 +17,6 @@ type user_data struct {
 	Galleries []string
 }
 
-func Get_redis_cookie(req *http.Request, cookie_name string) string {
-	uuid, err := req.Cookie("session")
-	if err != nil {
-		panic(err)
-	}
-	username := db.RedisGetSession(uuid.Value)
-	return username
-}
-
 func User_front(res http.ResponseWriter, req *http.Request) {
 	username := Get_redis_cookie(req, "session")
 	users_galleries := db.GetUsersGalleries(username)
@@ -78,11 +69,7 @@ func Handle_pic_upload(res http.ResponseWriter, req *http.Request) {
 	split := strings.Split(fh.Filename, ".")
 	ext := split[1]
 	username := Get_redis_cookie(req, "session")
-	gallery_name_cookie, err := req.Cookie("gallery")
-	if err != nil {
-		panic(err)
-	}
-	gallery_name := gallery_name_cookie.Value
+	gallery_name := Get_galleryname_cookie(req)
 	fname := fmt.Sprintf("%x", h.Sum(nil)) + "." + ext
 	// create new fileS
 	wd, err := os.Getwd()

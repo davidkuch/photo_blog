@@ -46,11 +46,7 @@ func Display_published(res http.ResponseWriter, req *http.Request) {
 // action: insert to "shared" table in db
 func Share_gallery(res http.ResponseWriter, req *http.Request) {
 	owner := Get_redis_cookie(req, "session")
-	gallery_name_cookie, err := req.Cookie("gallery")
-	if err != nil {
-		panic(err)
-	}
-	gallery := gallery_name_cookie.Value
+	gallery := Get_galleryname_cookie(req)
 	other := req.FormValue("other")
 	level := "temp"
 	db.Share_gallery(owner, other, gallery, level)
