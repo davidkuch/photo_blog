@@ -279,3 +279,12 @@ func Get_shared(name string) map[string]string {
 	defer rows.Close()
 	return result
 }
+
+func View_increment(owner, other, gallery string) {
+	connect()
+	sqlstt := `update shared set views=views+1 where owner=$1 and other=$2 and gallery=$3`
+	_, err := db.Exec(sqlstt, owner, other, gallery)
+	if err != nil {
+		panic(err)
+	}
+}

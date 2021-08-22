@@ -14,10 +14,11 @@ func Get_redis_cookie(req *http.Request, cookie_name string) string {
 	return username
 }
 
-func Get_galleryname_cookie(req *http.Request) (gallery_name string) {
+func Get_galleryname_cookie(req *http.Request) string {
 	gallery_name_cookie, err := req.Cookie("gallery")
 	if err != nil {
 		panic(err)
 	}
-	gallery_name = gallery_name_cookie.Value
+	gallery_name := gallery_name_cookie.Value
+	return gallery_name
 }
